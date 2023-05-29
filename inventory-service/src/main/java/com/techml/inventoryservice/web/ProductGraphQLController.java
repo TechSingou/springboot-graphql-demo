@@ -3,8 +3,7 @@ package com.techml.inventoryservice.web;
 import com.techml.inventoryservice.dto.ProductRequestDTO;
 import com.techml.inventoryservice.entity.Category;
 import com.techml.inventoryservice.entity.Product;
-import com.techml.inventoryservice.repository.CategoryRepository;
-import com.techml.inventoryservice.repository.ProductRepository;
+import com.techml.inventoryservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -12,70 +11,49 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 public class ProductGraphQLController {
-    private ProductRepository productRepository;
-    private CategoryRepository categoryRepository;
+    private ProductService productService;
 
     @Autowired
-    public ProductGraphQLController(ProductRepository productRepository, CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
+    public ProductGraphQLController(ProductService productService) {
+        this.productService = productService;
     }
 
 
     @QueryMapping
     public List<Product> productList() {
-        return productRepository.findAll();
+        return productService.getProducts();
     }
 
     @QueryMapping
     public Product productById(@Argument String id) {
-        return productRepository.findById(id).orElseThrow(
-                () -> new RuntimeException(String.format("Product %s not found ", id))
-        );
+        return productService.getProductById(id);
     }
 
     @QueryMapping
     public List<Category> categories() {
-        return categoryRepository.findAll();
+        return productService.getCategories();
     }
 
     @QueryMapping
     public Category CategoryById(@Argument Long id) {
-        return categoryRepository.findById(id).orElseThrow(
-                () -> new RuntimeException(String.format("Category %s not found", id))
-        );
+        return productService.getCategoryById(id);
     }
 
     @MutationMapping
     public Product saveProduct(@Argument ProductRequestDTO product) {
-        Category category = categoryRepository.findById(product.categoryId()).orElse(null);
-        Product productToSave = new Product();
-        productToSave.setId(UUID.randomUUID().toString());
-        productToSave.setName(product.name());
-        productToSave.setPrice(product.price());
-        productToSave.setQuantity(product.quantity());
-        productToSave.setCategory(category);
-        return productRepository.save(productToSave);
+        return productService.createProduct(product);
     }
 
     @MutationMapping
     public Product updateProduct(@Argument String id, @Argument ProductRequestDTO product) {
-        Category category = categoryRepository.findById(product.categoryId()).orElse(null);
-        Product productToSave = new Product();
-        productToSave.setId(id);
-        productToSave.setName(product.name());
-        productToSave.setPrice(product.price());
-        productToSave.setQuantity(product.quantity());
-        productToSave.setCategory(category);
-        return productRepository.save(productToSave);
+        return productService.updateProduct(id, product);
     }
 
     @MutationMapping
     public void deleteProductById(@Argument String id) {
-        productRepository.deleteById(id);
+        productService.deleteProductById(id);
     }
 }
