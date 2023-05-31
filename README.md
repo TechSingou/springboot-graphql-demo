@@ -13,13 +13,13 @@ L'api comporte 07 endpoints qui permettent :
 
 Envie de tester le projet dans un environnement isolé?
 
-- ==> Cloner le repo
+- ==> Cloner le repo : 
 git clone https://github.com/TechSingou/springboot-graphql-demo.git
-- ==> Se déplacer sans le repertoire du projet
+- ==> Se déplacer sans le repertoire du projet : 
 cd /springboot-graphql-demo
-- ==> Démarrer l'application
+- ==> Démarrer l'application : 
 docker-compose up
-- ==> Ouvrer votre navigateur et acceder à:
+- ==> Ouvrer votre navigateur et acceder à :
 http://localhost:8080/graphiql
 
 Amusez-vous !!! :)
